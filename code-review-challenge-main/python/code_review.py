@@ -8,42 +8,44 @@ def count_records_in_bounds(csv_file, bounds):
     """
     :param csv_file: Csv file to read
     :param bounds: Spatial extent to query
-    :return: counts
+    :return: (tuple)
+        geo_in_bounds (int): count of geometries in bound
+        max_categories (list): list of categories with max geometries in bounds
+        min_categories (list): list of categories with min geometries in bounds
     """
+
+    color_dict = {}
+
     with open(csv_file) as cursor:
-        red = 0
-        orange = 0
-        blue = 0
-        i = 0
+        # skip csv header row
+        next(cursor)
+
+        # init increment
+        geo_in_bounds = 0
+
         for row in cursor:
-            id, geometry, color = row.split(',')
+            # process csv values
+            _, geometry, color = row.split(',')
+            # remove trailing newline char
+            color = color.strip()
             geometry = wkt.loads(geometry)
+
+            # if point is within bounds, increment total and categories
             if bounds.contains(geometry):
-                i = i + 1
-            if color == 'red':
-                red = red + 1
-            if color == 'orange':
-                orange = orange + 1
-            if color == 'blue':
-                blue = blue + 1
+                geo_in_bounds = geo_in_bounds + 1
+                if color in color_dict:
+                    color_dict[color] += 1
+                else:
+                    color_dict[color] = 1
 
-        max = -10000000000
-        min = 10000000000
-        for x in (red, orange, blue):
-            if x > max:
-                max = x
-            if x < min:
-                min = x
+    # calc min/max within bounds by category 
+    cat_max = max(color_dict.values())
+    cat_min = min(color_dict.values())
 
-        dict_values = {
-            'red': red,
-            'orange': orange,
-            'blue': blue
-        }
     return \
-        i, \
-        [k for k, v in dict_values.items() if v == max][0], \
-        [k for k, v in dict_values.items() if v == min][0],
+        geo_in_bounds, \
+        [k for k, v in color_dict.items() if v == cat_max], \
+        [k for k, v in color_dict.items() if v == cat_min],
 
 
 if __name__ == '__main__':
