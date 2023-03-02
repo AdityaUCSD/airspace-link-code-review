@@ -14,12 +14,7 @@ def count_records_in_bounds(csv_file, bounds):
         min_categories (list): list of categories with min geometries in bounds
     """
 
-    color_dict = {
-        'red': 0,
-        'orange': 0,
-        'blue': 0,
-        'magenta': 0
-    }
+    color_dict = {}
 
     with open(csv_file) as cursor:
         # skip csv header row
@@ -31,6 +26,7 @@ def count_records_in_bounds(csv_file, bounds):
         for row in cursor:
             # process csv values
             _, geometry, color = row.split(',')
+            # remove trailing newline char
             color = color.strip()
             geometry = wkt.loads(geometry)
 
@@ -39,6 +35,8 @@ def count_records_in_bounds(csv_file, bounds):
                 geo_in_bounds = geo_in_bounds + 1
                 if color in color_dict:
                     color_dict[color] += 1
+                else:
+                    color_dict[color] = 1
 
     # calc min/max within bounds by category 
     cat_max = max(color_dict.values())
