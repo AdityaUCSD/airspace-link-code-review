@@ -37,8 +37,6 @@ def count_records_in_bounds(csv_file, bounds):
                 if color in color_dict:
                     color_dict[color] += 1
 
-    print(color_dict)
-
     # calc min/max within bounds by category 
     cat_max = max(color_dict.values())
     cat_min = min(color_dict.values())
