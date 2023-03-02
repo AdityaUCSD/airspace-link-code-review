@@ -8,7 +8,10 @@ def count_records_in_bounds(csv_file, bounds):
     """
     :param csv_file: Csv file to read
     :param bounds: Spatial extent to query
-    :return: counts
+    :return: (tuple)
+        geo_in_bounds (int): count of geometries in bound
+        max_categories (list): list of categories with max geometries in bounds
+        min_categories (list): list of categories with min geometries in bounds
     """
 
     color_dict = {
@@ -40,7 +43,6 @@ def count_records_in_bounds(csv_file, bounds):
     # calc min/max within bounds by category 
     cat_max = max(color_dict.values())
     cat_min = min(color_dict.values())
-
 
     return \
         geo_in_bounds, \
